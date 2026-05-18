@@ -44,14 +44,16 @@ class BuyerController extends Controller
         
         // Fetch active orders for the buyer
         $activeOrders = Order::where('buyer_id', $user->id)
-                             ->whereIn('status', ['pending', 'processing', 'in_transit'])
+                             ->whereIn('status', ['pending', 'processing', 'accepted', 'dispatched', 'in_transit'])
                              ->with(['farmer'])
+                             ->orderBy('created_at', 'desc')
                              ->get();
 
         // Fetch active bids for the buyer
         $activeBids = \App\Models\Bid::where('buyer_id', $user->id)
                              ->where('status', 'pending')
                              ->with(['crop'])
+                             ->orderBy('created_at', 'desc')
                              ->get();
 
         // Dynamic Trends for Buyer (based on available crops)
@@ -189,7 +191,7 @@ class BuyerController extends Controller
                 $existingOrder->save();
                 
                 // Update Logistics record
-                $logistics = \App\Models\Logistics::where('order_id', $existingOrder->id)->first();
+                $logistics = \App\Models\Logistics::where('order_id', (string)$existingOrder->id)->first();
                 if ($logistics) {
                     $logistics->update([
                         'crop_name' => count($currentItems) > 1 ? count($currentItems) . ' Items' : $currentItems[0]['name'],
@@ -424,7 +426,7 @@ class BuyerController extends Controller
                                      
         // Fetch active orders
         $activeOrders = \App\Models\Order::where('buyer_id', $user->id)
-                             ->whereIn('status', ['pending', 'processing', 'in_transit'])
+                             ->whereIn('status', ['pending', 'processing', 'accepted', 'dispatched', 'in_transit'])
                              ->with(['farmer'])
                              ->orderBy('created_at', 'desc')
                              ->paginate(10, ['*'], 'active_page');
@@ -459,7 +461,7 @@ class BuyerController extends Controller
         $order->update(['status' => 'cancelled']);
         
         // Also cancel/remove associated logistics
-        \App\Models\Logistics::where('order_id', $order->id)->delete();
+        \App\Models\Logistics::where('order_id', (string)$order->id)->delete();
 
         // Restore crop quantity
         foreach ($order->items ?? [] as $item) {
@@ -795,6 +797,7 @@ class BuyerController extends Controller
         $activeOrders = Order::where('buyer_id', (string)$user->id)
                              ->whereIn('status', ['pending', 'processing', 'accepted', 'dispatched', 'in_transit'])
                              ->with(['farmer'])
+                             ->orderBy('created_at', 'desc')
                              ->get();
                              
         $activeBidsCount = \App\Models\Bid::where('buyer_id', (string)$user->id)

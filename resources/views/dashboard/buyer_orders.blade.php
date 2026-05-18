@@ -251,7 +251,15 @@
                     <p class="text-xs text-on-surface-variant font-medium uppercase tracking-widest">{{ $order->created_at->format('d M Y, h:i A') }}</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <span class="px-4 py-1.5 bg-green-100 text-green-700 text-[10px] font-black rounded-lg uppercase tracking-widest border border-green-200">{{ ucfirst($order->status) }}</span>
+                    @php
+                        $cStatusColors = [
+                            'completed' => 'bg-green-100 text-green-700 border-green-200',
+                            'delivered' => 'bg-emerald-100 text-emerald-700 border-emerald-200',
+                            'cancelled' => 'bg-red-100 text-red-700 border-red-200'
+                        ];
+                        $csc = $cStatusColors[$order->status] ?? 'bg-stone-100 text-stone-600 border-stone-200';
+                    @endphp
+                    <span class="px-4 py-1.5 {{ $csc }} text-[10px] font-black rounded-lg uppercase tracking-widest border">{{ ucfirst($order->status) }}</span>
                     <p class="text-2xl font-black text-on-surface">₹{{ number_format($order->total_price ?? 0, 2) }}</p>
                 </div>
             </div>

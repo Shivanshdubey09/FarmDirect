@@ -34,7 +34,7 @@ class AdminController extends Controller
 
         $totalOrders      = Order::count();
         $completedOrders  = Order::where('status', '!=', 'cancelled')->count();
-        $pendingOrders    = Order::whereIn('status', ['pending', 'processing'])->count();
+        $pendingOrders    = Order::whereIn('status', ['pending', 'processing', 'accepted', 'dispatched', 'in_transit'])->count();
 
         // Total Revenue from all non-cancelled orders
         $totalRevenue = Order::where('status', '!=', 'cancelled')->sum('total_price') ?? 0;
@@ -63,7 +63,7 @@ class AdminController extends Controller
                                                        ->where('status', '!=', 'cancelled')
                                                        ->sum('total_price') ?? 0;
                            $farmer->active_orders = Order::where('farmer_id', (string)$farmer->id)
-                                                         ->whereIn('status', ['pending', 'processing'])
+                                                         ->whereIn('status', ['pending', 'processing', 'accepted', 'dispatched', 'in_transit'])
                                                          ->count();
                            $farmer->crops_list = Crop::where('farmer_id', (string)$farmer->id)->orderBy('created_at', 'desc')->get();
                            $farmer->orders_list = Order::where('farmer_id', (string)$farmer->id)
@@ -98,7 +98,7 @@ class AdminController extends Controller
                                                         ->where('status', '!=', 'cancelled')
                                                         ->sum('total_price') ?? 0;
                           $buyer->active_orders = Order::where('buyer_id', (string)$buyer->id)
-                                                       ->whereIn('status', ['pending', 'processing'])
+                                                       ->whereIn('status', ['pending', 'processing', 'accepted', 'dispatched', 'in_transit'])
                                                        ->count();
                           $buyer->total_order_count = Order::where('buyer_id', (string)$buyer->id)->count();
                           $buyer->orders_list = Order::where('buyer_id', (string)$buyer->id)
@@ -510,7 +510,7 @@ class AdminController extends Controller
             'suspended_farmers'=> User::where('role', 'farmer')->where('is_suspended', true)->count(),
             'suspended_buyers' => User::where('role', 'buyer')->where('is_suspended', true)->count(),
             'total_orders'     => Order::count(),
-            'pending_orders'   => Order::whereIn('status', ['pending', 'processing'])->count(),
+            'pending_orders'   => Order::whereIn('status', ['pending', 'processing', 'accepted', 'dispatched', 'in_transit'])->count(),
             'completed_orders' => Order::where('status', '!=', 'cancelled')->count(),
             'total_revenue'    => Order::where('status', '!=', 'cancelled')->sum('total_price') ?? 0,
             'active_logistics' => Logistics::whereNotIn('status', ['Delivered'])->count(),

@@ -45,7 +45,7 @@ class FarmerController extends Controller
 
         // Fetch Active Orders
         $activeOrders = \App\Models\Order::where('farmer_id', (string)$user->id)
-                                         ->whereIn('status', ['pending', 'processing'])
+                                         ->whereIn('status', ['pending', 'processing', 'accepted', 'dispatched', 'in_transit'])
                                          ->orderBy('created_at', 'desc')
                                          ->get();
 
@@ -451,7 +451,7 @@ class FarmerController extends Controller
 
         // Fetch active orders (pending or processing)
         $activeOrders = \App\Models\Order::where('farmer_id', (string)$user->id)
-                    ->whereIn('status', ['pending', 'processing', 'in_transit'])
+                    ->whereIn('status', ['pending', 'processing', 'accepted', 'dispatched', 'in_transit'])
                     ->orderBy('created_at', 'desc')
                     ->paginate(10);
         
@@ -548,7 +548,7 @@ class FarmerController extends Controller
     {
         $user = \Auth::user();
         $orders = \App\Models\Order::where('farmer_id', $user->id)
-                    ->whereIn('status', ['pending', 'processing'])
+                    ->whereIn('status', ['pending', 'processing', 'accepted', 'dispatched', 'in_transit'])
                     ->orderBy('created_at', 'desc')
                     ->get();
         // Eager load buyer for each order
@@ -600,18 +600,6 @@ class FarmerController extends Controller
     public function rejectOrder($id)
     {
         $order = \App\Models\Order::findOrFail($id);
-        
-        // Restore crop quantities
-        if (!empty($order->items)) {
-            foreach ($order->items as $item) {
-                if (isset($item['crop_id'])) {
-                    $crop = \App\Models\Crop::find($item['crop_id']);
-                    if ($crop) {
-                        $crop->increment('quantity', $item['quantity']);
-                    }
-                }
-            }
-        }
 
         $order->update(['status' => 'cancelled']);
         
