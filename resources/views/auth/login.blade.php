@@ -84,6 +84,13 @@
     </script>
 <style>
         body { font-family: 'Manrope', sans-serif; }
+        #main-header {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: transform, background-color, border-color;
+        }
         .glass-card {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(24px);
@@ -103,7 +110,7 @@
 <!-- Dark Premium Hero Background -->
 <div class="absolute top-0 left-0 w-full h-[60vh] bg-gradient-to-b from-green-950 via-green-900/90 to-transparent -z-10"></div>
 
-<header id="main-header" class="fixed top-0 w-full z-50 bg-white/10 backdrop-blur-xl border-b border-white/10 transition-colors duration-300">
+<header id="main-header" class="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-xl border-b border-white/10 transition-colors duration-300">
     <nav class="flex justify-center items-center px-6 lg:px-12 h-20 max-w-[1920px] mx-auto">
         <div class="flex items-center gap-6">
             <a href="/" class="text-4xl md:text-5xl font-extrabold tracking-tight text-white flex items-center gap-3 hover:opacity-80 transition-opacity">
