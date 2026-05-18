@@ -1,58 +1,107 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🌾 FarmDirect — Bulk Agribusiness & AI Marketplace
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> Direct, premium, and decentralized B2B procurement from verified sustainable farms. Powered by AI and designed for rural and corporate efficiency.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 The Vision
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**FarmDirect** is a state-of-the-art, bulk agricultural marketplace designed to bypass middlemen and connect farmers directly with commercial buyers (restaurants, retail chains, food processors, and exporters). 
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+The platform blends cutting-edge visual aesthetics (sleek dark mode, bento-grid modules, smooth micro-animations, and glassmorphism) with highly robust backend architecture to deliver a seamless trading experience for both parties.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🛠️ Technology Stack
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+*   **Core Framework**: Laravel 11 (PHP)
+*   **Database**: MongoDB (NoSQL database connection via Eloquent for highly flexible crop catalogs, chats, bids, and notifications)
+*   **Styling & Design System**: Modern custom Tailwind CSS (integrated with an offline, high-speed Play CDN compilation engine to bypass network and SSL blocks)
+*   **Aesthetics & Typography**: Outfit, Plus Jakarta Sans, and Manrope fonts paired with Google Material Design Symbols
+*   **File Storage**: Local filesystem storage with symbolic linking for custom user avatars and quality-crop photo uploads
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## ✨ Core Features
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 🚜 1. Dual-Role Specialized Dashboards
+*   **Farmer Hub**: Manage listings, monitor active crop bids, track incoming logistics, and interact with the AI assistant.
+*   **Buyer Portal**: Discover fresh crops, browse the asymmetric bento-grid marketplace, save listings, bid on active bulk harvests, and download PDF invoices.
 
+### 🤖 2. Mandi AI Price Assistant (FarmBot)
+*   Integrates interactive, real-time AI price recommendation widgets.
+*   Pulls up-to-date regional Mandi prices and evaluates bulk quality levels to suggest optimal listing and bidding prices.
+
+### 💬 3. Real-Time Chat & Collaboration
+*   Direct buyer-to-farmer live messaging system built into the dashboard.
+*   Bypasses phone calls, allowing instant negotiations, custom photo sharing, and terms agreements directly inside a clean, modern interface.
+
+### 📸 4. Intelligent Crop Image Engine
+*   **Model-Level Accessor**: Centralized resolving engine built directly into the `Crop` Eloquent model.
+*   **Farmer Custom Uploads**: Supports physical upload of quality images, dynamically processed, stored, and routed via secure local public storage.
+*   **Curated Keyword Mappings**: Contains a handpicked catalog of **60+ premium crop varieties** (e.g. Wheat, Basmati Rice, Guava, Sugarcane, Tomato, Cabbage, Ginger, etc.). If no custom image is uploaded, it auto-resolves to a matched, high-fidelity Unsplash photo.
+
+### ⚖️ 5. Bidding & Order Logistics
+*   Enables buyers to place competitive bids on bulk crop listings.
+*   Includes step-by-step logistics progress bars, tracking, and structured PDF invoice generation.
+
+### 🔒 6. Interactive Guardrails & Modals
+*   Premium glassmorphic modal popups for **Terms & Conditions** and **Privacy Policy** during registration.
+*   Seamless profile picture upload persistence and dynamic system-wide navbar avatar rendering.
+
+---
+
+## 👨‍💻 Core Team
+
+*   **Shivansh Dubey** — *Full Stack Developer & Technical Lead*
+*   **Saakshi Jha** — *Frontend Architect & UX Designer*
+*   **Rishabh Chaurasia** — *Backend Engineer & Database Administrator*
+
+---
+
+## 🔧 Installation & Local Setup
+
+Follow these simple steps to run the application locally on your machine:
+
+### 1. Clone the repository
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/Shivanshdubey09/FarmDirect.git
+cd FarmDirect
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Install dependencies
+```bash
+composer install
+npm install
+```
 
-## Contributing
+### 3. Setup environment variables
+Copy the example environment file and configure your database settings:
+```bash
+cp .env.example .env
+```
+Make sure to configure your MongoDB connection credentials in your `.env` file:
+```env
+DB_CONNECTION=mongodb
+DB_HOST=127.0.0.1
+DB_PORT=27017
+DB_DATABASE=farmdirect
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. Create storage symlink
+Ensure uploaded crop images and avatars are accessible:
+```bash
+php artisan storage:link
+```
 
-## Code of Conduct
+### 5. Launch the local servers
+Run the development server:
+```bash
+php artisan serve
+```
+Open your browser and navigate to `http://127.0.0.1:8000` to experience the premium interface!
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 📄 License
+This project is open-sourced software licensed under the [MIT License](LICENSE).
