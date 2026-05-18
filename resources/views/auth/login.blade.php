@@ -132,7 +132,7 @@
 <span class="material-symbols-outlined text-[16px]">verified_user</span>
                     INSTITUTIONAL GRADE EXCHANGE
                 </div>
-<h1 class="text-6xl md:text-7xl font-extrabold tracking-tighter leading-[1.05] mb-6 drop-shadow-lg">
+<h1 class="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tighter leading-[1.05] mb-6 drop-shadow-lg">
                     Cultivating<br/>
 <span class="text-primary drop-shadow-md">Digital</span><br/>
                     Transparency

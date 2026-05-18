@@ -162,7 +162,7 @@
 <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
                 Empowering 50,000+ Farmers Globally
             </div>
-<h1 class="text-7xl md:text-8xl lg:text-[10rem] font-headline font-extrabold tracking-tighter text-white leading-[0.85] mb-12 text-shadow-hero">
+<h1 class="text-6xl md:text-8xl lg:text-[10rem] font-headline font-extrabold tracking-tighter text-white leading-[0.85] mb-12 text-shadow-hero">
                 Sell <span class="text-primary-fixed italic">smarter</span>,<br/>
                 earn <span class="text-primary-fixed italic">better</span>
 </h1>
@@ -473,36 +473,36 @@
 <div class="relative">
 <div class="absolute left-4 md:left-1/2 top-0 bottom-0 timeline-line -translate-x-1/2 opacity-20"></div>
 <div class="relative flex flex-col md:flex-row items-center mb-40 gap-12 md:gap-0">
-<div class="w-full md:w-1/2 md:pr-24 text-left md:text-right">
+<div class="w-full md:w-1/2 md:pr-24 pl-20 md:pl-0 text-left md:text-right">
 <h3 class="text-3xl md:text-4xl font-headline font-extrabold mb-6">List Your Harvest</h3>
 <p class="text-on-surface-variant text-xl leading-relaxed opacity-80">Upload high-res photos and specify variety, quantity, and precise harvest date.</p>
 </div>
 <div class="absolute left-4 md:left-1/2 -translate-x-1/2 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center font-bold text-2xl z-20 shadow-xl">1</div>
-<div class="w-full md:w-1/2 md:pl-24">
+<div class="w-full md:w-1/2 pl-20 md:pl-24">
 <div class="rounded-3xl overflow-hidden shadow-2xl aspect-[4/3] transform hover:scale-[1.02] transition-transform">
 <img class="w-full h-full object-cover" data-alt="Farmer taking high resolution photo of fresh vegetables in a sunlit barn" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6S1L9BZzhaOg2goI_ztErJWeL49EgLHWjgQuTzJWVmMi7dzy1d0gYMxgQyyqEES5Gj25PQiSv04vYEF94xnrWndgIO15r1dE4e40Vlh8OPpTLyCL6sElifur6qYUywgUHKInWwCDw074_t7oJffCiZiNdNXYUVv6t7k-I9atRax7JK2Xl6XAMxvssLfQPxTzFe1cryeS6PGx_fEf24NaCpalVo4N_Eqawz6UHtHOTEqq-BNUhi-0oh2nSA9R8N3752t3XwDXLYXFz"/>
 </div>
 </div>
 </div>
 <div class="relative flex flex-col md:flex-row-reverse items-center mb-40 gap-12 md:gap-0">
-<div class="w-full md:w-1/2 md:pl-24">
+<div class="w-full md:w-1/2 pl-20 md:pl-24">
 <h3 class="text-3xl md:text-4xl font-headline font-extrabold mb-6">Match with Buyers</h3>
 <p class="text-on-surface-variant text-xl leading-relaxed opacity-80">Our AI notifies matching buyers—from artisanal chefs to international retail chains.</p>
 </div>
 <div class="absolute left-4 md:left-1/2 -translate-x-1/2 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center font-bold text-2xl z-20 shadow-xl">2</div>
-<div class="w-full md:w-1/2 md:pr-24">
+<div class="w-full md:w-1/2 pl-20 md:pr-24 md:pl-0">
 <div class="rounded-3xl overflow-hidden shadow-2xl aspect-[4/3] transform hover:scale-[1.02] transition-transform">
 <img class="w-full h-full object-cover" data-alt="A professional chef browsing a tablet with fresh farm produce listings in a high-end restaurant kitchen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAYC0nZZANGNKphd2YA11mLS56Ky3ZJXNEvsM5B9fAiB2HrMMnG8pA0xv23o1-Abkrh4qsIqAaH4yg8Rf0mDxgkRA1NYHnmLWJLlsproOqHsYWd3OEW7w3l9dfTGqs9GNASSKbkggd8D9YbTjxDQKaV-XRvzU0scjJnovBOVbRahwQBOWaW5yUhLvXgjQ7FKK9K4oh3wLPVBZlwgTIVG5ne25igLEEYE14iArG6SrC07jKXVsyOe8QVvrBJVAyEPR_0khOyVkbGCsq"/>
 </div>
 </div>
 </div>
 <div class="relative flex flex-col md:flex-row items-center gap-12 md:gap-0">
-<div class="w-full md:w-1/2 md:pr-24 text-left md:text-right">
+<div class="w-full md:w-1/2 md:pr-24 pl-20 md:pl-0 text-left md:text-right">
 <h3 class="text-3xl md:text-4xl font-headline font-extrabold mb-6">Direct Delivery</h3>
 <p class="text-on-surface-variant text-xl leading-relaxed opacity-80">Coordinate logistics and get paid instantly upon secure buyer verification.</p>
 </div>
 <div class="absolute left-4 md:left-1/2 -translate-x-1/2 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center font-bold text-2xl z-20 shadow-xl">3</div>
-<div class="w-full md:w-1/2 md:pl-24">
+<div class="w-full md:w-1/2 pl-20 md:pl-24">
 <div class="rounded-3xl overflow-hidden shadow-2xl aspect-[4/3] transform hover:scale-[1.02] transition-transform">
 <img class="w-full h-full object-cover" data-alt="Handover of fresh produce from a farmer to a local store owner at sunrise" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8XTaRyzWyQA4wQnCBZ2Jvg6ZMDRWBrxtsm7Cnwq7accVCGPpcvg2dlitQfyeOJ_H8OSg52z0WtD8j_grYdCRuBh7Bfm0l6tvfhSDGpZcaDkLAJr1ANUPizYOrIYI70YoIqHq5_jJtSL7AJ0c7i4YLOmU0uMEET1Db91T2j48Fh9fnvPF5TiPUNMBQap2W6y-dn0vFH_Hpe9CD1UAhtRp7O28whFHiE_hy1eYirMfs0PAchBQe-veeSW3RMkfcD12Tl87stkebnUKR"/>
 </div>
