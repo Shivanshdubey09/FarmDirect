@@ -187,7 +187,7 @@
                 <h3 class="text-xl font-extrabold text-on-surface tracking-tight mb-2">{{ $crop->name }}</h3>
                 <p class="text-xs text-on-surface-variant font-medium mb-4 flex items-center gap-1">
                     <span class="material-symbols-outlined text-sm">location_on</span>
-                    {{ $crop->farmer->city ?? 'Rural Region' }}, {{ $crop->farmer->state ?? 'IN' }} • {{ $crop->quantity }} {{ $crop->unit }}
+                    <span class="font-extrabold text-primary">{{ $crop->farmer->name ?? 'Unknown Farmer' }}</span> • {{ $crop->farmer->city ?? 'Rural Region' }}, {{ $crop->farmer->state ?? 'IN' }} • {{ $crop->quantity }} {{ $crop->unit }}
                 </p>
                 <div class="flex flex-col gap-3">
                     <form action="{{ route('cart.add') }}" method="POST" class="flex flex-col gap-3">

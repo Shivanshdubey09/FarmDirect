@@ -353,7 +353,7 @@
                             <h4 class="text-on-surface-variant font-label font-bold text-xs uppercase tracking-widest">
                                 Net Revenue Overview</h4>
                         </div>
-                        <p class="text-5xl font-black tracking-tighter">₹{{ number_format($revenue, 2) }}</p>
+                        <p class="text-5xl font-black tracking-tighter" id="net-revenue-display">₹{{ number_format($revenue, 2) }}</p>
                     </div>
                     <div class="flex flex-col items-end">
                         <span
@@ -1256,7 +1256,7 @@
                 .then(data => {
                     if (statusEl) statusEl.classList.add('hidden');
                     // Update Revenue (Procurement)
-                    const revenueEl = document.querySelector('.text-5xl.font-black.tracking-tighter');
+                    const revenueEl = document.getElementById('net-revenue-display');
                     if (revenueEl) revenueEl.innerText = '₹' + data.revenue;
                     
                     // Update Active Orders Count

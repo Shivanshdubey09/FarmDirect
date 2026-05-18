@@ -174,7 +174,7 @@
                 <h3 class="text-xl font-extrabold text-on-surface tracking-tight mb-2">{{ $crop->name }}</h3>
                 <p class="text-xs text-on-surface-variant font-medium mb-4 flex items-center gap-1">
                     <span class="material-symbols-outlined text-sm">location_on</span>
-                    {{ $crop->farmer->city ?? 'Rural Region' }}, {{ $crop->farmer->state ?? 'IN' }}
+                    <span class="font-extrabold text-primary">{{ $crop->farmer->name ?? 'Unknown Farmer' }}</span> • {{ $crop->farmer->city ?? 'Rural Region' }}, {{ $crop->farmer->state ?? 'IN' }}
                 </p>
                 <div class="flex justify-between items-end">
                     <div>
