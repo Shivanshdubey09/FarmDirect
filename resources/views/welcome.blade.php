@@ -117,9 +117,66 @@
             width: 2px;
             background: repeating-linear-gradient(to bottom, transparent, transparent 4px, #0d631b 4px, #0d631b 8px);
         }
+        
+        /* Preloader CSS Animations */
+        @keyframes colorShift {
+            0%, 100% {
+                color: #a3f69c; /* Light vibrant green */
+                text-shadow: 0 0 25px rgba(163, 246, 156, 0.6);
+            }
+            50% {
+                color: #031505; /* Deep rich dark forest green */
+                text-shadow: 0 0 5px rgba(3, 21, 5, 0.1);
+            }
+        }
+        .animate-color-shift {
+            animation: colorShift 3s ease-in-out infinite;
+        }
+        @keyframes loadingBar {
+            0% {
+                left: -50%;
+                width: 30%;
+            }
+            50% {
+                width: 60%;
+            }
+            100% {
+                left: 110%;
+                width: 30%;
+            }
+        }
     </style>
 </head>
 <body class="bg-background text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Premium Preloader -->
+<div id="preloader" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-gradient-to-br from-[#051408] to-[#0a2711] transition-all duration-700 ease-in-out transform origin-center">
+    <div class="relative flex flex-col items-center select-none text-center px-4">
+        <!-- Glowing background aura -->
+        <div class="absolute -inset-10 bg-primary/10 rounded-full blur-3xl animate-pulse pointer-events-none"></div>
+        
+        <!-- Logo Container -->
+        <div class="relative mb-6 transform hover:scale-110 transition-transform duration-500">
+            <div class="w-32 h-32 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full flex items-center justify-center shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]">
+                <img src="{{ asset('images/leaf_clean.png') }}" 
+                     class="w-20 h-20 object-contain animate-bounce" 
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" 
+                     alt="FarmDirect Logo"/>
+                <span class="material-symbols-outlined text-6xl text-primary-fixed animate-pulse hidden" style="font-variation-settings: 'FILL' 1;">eco</span>
+            </div>
+        </div>
+        
+        <!-- Title with Animated Light-to-Dark Color Shift -->
+        <h1 class="text-5xl md:text-6xl font-headline font-black tracking-tighter uppercase mb-4 animate-color-shift">
+            FarmDirect
+        </h1>
+        
+        <!-- Premium Loading Bar -->
+        <div class="w-48 h-1 bg-white/10 rounded-full overflow-hidden relative mt-2">
+            <div class="absolute top-0 left-0 h-full w-1/2 bg-gradient-to-r from-primary-fixed to-primary rounded-full animate-[loadingBar_1.8s_ease-in-out_infinite]"></div>
+        </div>
+        <p class="text-xs text-white/40 font-label tracking-widest uppercase mt-4 animate-pulse">Loading Harvests...</p>
+    </div>
+</div>
 <header id="main-header" class="fixed top-0 w-full z-50 bg-white/10 backdrop-blur-xl border-b border-white/10 transition-colors duration-300">
 <nav class="flex justify-between items-center px-6 lg:px-12 h-20 max-w-[1920px] mx-auto">
 <a href="/" class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-2 hover:opacity-80 transition-opacity">
@@ -878,5 +935,27 @@
             });
         });
     });
+
+    // Graceful Preloader Dismissal
+    window.addEventListener('load', () => {
+        const preloader = document.getElementById('preloader');
+        if (preloader) {
+            preloader.classList.add('opacity-0', 'pointer-events-none', 'scale-105');
+            setTimeout(() => {
+                preloader.remove();
+            }, 800);
+        }
+    });
+
+    // Safety fallback timeout (3s)
+    setTimeout(() => {
+        const preloader = document.getElementById('preloader');
+        if (preloader) {
+            preloader.classList.add('opacity-0', 'pointer-events-none', 'scale-105');
+            setTimeout(() => {
+                preloader.remove();
+            }, 800);
+        }
+    }, 3000);
 </script>
 </body></html>
