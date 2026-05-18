@@ -12,6 +12,7 @@ class Bid extends Model
     protected $fillable = [
         'crop_id',
         'buyer_id',
+        'farmer_id',
         'amount',
         'status',
         'message',

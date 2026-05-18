@@ -34,9 +34,10 @@ class FarmerController extends Controller
             });
         }
         $crops = $cropQuery->limit(5)->get();
+        $allCropIds = Crop::where('farmer_id', (string)$user->id)->pluck('id')->toArray();
 
         // Fetch User's Active Bids
-        $bids = \App\Models\Bid::whereIn('crop_id', $crops->pluck('id'))
+        $bids = \App\Models\Bid::whereIn('crop_id', $allCropIds)
                             ->where('status', 'pending')
                             ->orderBy('created_at', 'desc')
                             ->limit(4)
@@ -97,7 +98,7 @@ class FarmerController extends Controller
 
         // AI Insights based on data
         $cropCount = $crops->count();
-        $bidCount = \App\Models\Bid::whereIn('crop_id', $crops->pluck('id'))->count();
+        $bidCount = \App\Models\Bid::whereIn('crop_id', $allCropIds)->count();
         
         $aiInsights = "You have {$cropCount} active crop listings. ";
         if ($bidCount > 0) {
@@ -439,7 +440,7 @@ class FarmerController extends Controller
         $user = \Auth::user();
         
         // Fetch all crop IDs owned by this farmer (convert to string for matching in bids collection)
-        $cropIds = \App\Models\Crop::where('farmer_id', (string)$user->id)->pluck('_id')->map(fn($id) => (string)$id)->toArray();
+        $cropIds = \App\Models\Crop::where('farmer_id', (string)$user->id)->pluck('id')->toArray();
 
         // Fetch bids for those crops
         $bids = \App\Models\Bid::whereIn('crop_id', $cropIds)
@@ -588,7 +589,7 @@ class FarmerController extends Controller
     public function clearRejectedBids()
     {
         $user = \Auth::user();
-        $cropIds = \App\Models\Crop::where('farmer_id', $user->id)->pluck('_id')->toArray();
+        $cropIds = \App\Models\Crop::where('farmer_id', $user->id)->pluck('id')->toArray();
         \App\Models\Bid::whereIn('crop_id', $cropIds)->where('status', 'rejected')->delete();
         return response()->json(['success' => true]);
     }

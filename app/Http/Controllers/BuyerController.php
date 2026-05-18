@@ -401,7 +401,7 @@ class BuyerController extends Controller
         // Fallback: if nothing found, find via order_ids for this buyer
         if ($logistics->isEmpty()) {
             $orderIds = \App\Models\Order::where('buyer_id', $user->id)
-                            ->pluck('_id')->toArray();
+                            ->pluck('id')->toArray();
             $logistics = \App\Models\Logistics::whereIn('order_id', $orderIds)
                             ->orderBy('created_at', 'desc')
                             ->get();
