@@ -1,6 +1,20 @@
-# 🌾 FarmDirect — Bulk Agribusiness & AI Marketplace
+<p align="center">
+  <a href="https://github.com/Shivanshdubey09/FarmDirect" target="_blank">
+    <img src="public/favicon.png" width="100" alt="FarmDirect Logo">
+  </a>
+</p>
 
-> Direct, premium, and decentralized B2B procurement from verified sustainable farms. Powered by AI and designed for rural and corporate efficiency.
+<h1 align="center">🌾 FarmDirect — Bulk Agribusiness & AI Marketplace</h1>
+
+<p align="center">
+  <strong>Direct, premium, and decentralized B2B procurement from verified sustainable farms. Powered by AI and designed for rural and corporate efficiency.</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Laravel%2011-red.svg?style=for-the-badge&logo=laravel" alt="Laravel 11">
+  <img src="https://img.shields.io/badge/Database-MongoDB-green.svg?style=for-the-badge&logo=mongodb" alt="MongoDB">
+  <img src="https://img.shields.io/badge/Design%20System-Tailwind%20CSS-blue.svg?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS">
+</p>
 
 ---
 
