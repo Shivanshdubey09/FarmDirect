@@ -416,20 +416,16 @@
     </div>
 </div>
 
-<!-- Mock Mailer Glassmorphic Alert Toast -->
-<div id="mock-mailer-toast" class="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 max-w-md w-[90%] bg-green-950/80 backdrop-blur-md border border-green-500/30 rounded-2xl p-4 text-white shadow-2xl flex items-start gap-3 transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none">
-    <div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center text-green-400 flex-shrink-0">
+<!-- Secure Mailer Alert Toast -->
+<div id="mock-mailer-toast" class="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 max-w-md w-[90%] bg-green-950/90 backdrop-blur-md border border-green-500/30 rounded-2xl p-4 text-white shadow-2xl flex items-start gap-3 transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none">
+    <div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center text-green-400 flex-shrink-0 animate-pulse">
         <span class="material-symbols-outlined">mark_email_unread</span>
     </div>
     <div class="flex-grow min-w-0">
-        <h4 class="text-[10px] font-extrabold text-green-300 uppercase tracking-[0.2em]">FarmDirect Secure Mailer</h4>
-        <p class="text-[11px] text-gray-300 mt-1 font-medium" id="mock-mailer-text">OTP code simulated offline...</p>
-        <div class="mt-2.5 flex items-center gap-2">
-            <span class="text-xs font-bold text-white bg-green-900/50 border border-green-500/20 px-2.5 py-1 rounded" id="mock-mailer-code">123456</span>
-            <button onclick="copyMockMailerCode()" class="text-[10px] font-bold text-green-400 hover:text-green-300 uppercase flex items-center gap-1 transition-colors font-display tracking-widest">
-                <span class="material-symbols-outlined text-xs">content_copy</span> Copy Code
-            </button>
-        </div>
+        <h4 class="text-[10px] font-extrabold text-green-300 uppercase tracking-[0.2em]">FarmDirect Security Core</h4>
+        <p class="text-[11px] text-gray-300 mt-1 font-medium leading-relaxed" id="mock-mailer-text">
+            A secure 6-digit verification code has been successfully dispatched to your email address. Please check your inbox and spam folder.
+        </p>
     </div>
     <button onclick="hideMockMailer()" class="text-gray-400 hover:text-white transition-colors">
         <span class="material-symbols-outlined text-lg">close</span>
@@ -590,25 +586,13 @@
         }
 
         // Mock mailer logic
-        window.showMockMailer = (email, code) => {
-            document.getElementById('mock-mailer-text').innerText = `Real email dispatched successfully via SMTP! The verification code was routed to ${email}. We also mirrored it below for instant local testing.`;
-            document.getElementById('mock-mailer-code').innerText = code;
+        window.showMockMailer = (email) => {
+            document.getElementById('mock-mailer-text').innerHTML = `A secure 6-digit verification code has been successfully dispatched via SMTP to <span class="text-green-300 font-bold">${email}</span>. Please check your inbox and spam folder.`;
             mailerToast.classList.remove('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
         };
 
         window.hideMockMailer = () => {
             mailerToast.classList.add('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
-        };
-
-        window.copyMockMailerCode = () => {
-            const code = document.getElementById('mock-mailer-code').innerText;
-            navigator.clipboard.writeText(code);
-            // Flash color feedback
-            const copyBtn = document.querySelector('#mock-mailer-toast button');
-            copyBtn.innerHTML = '<span class="material-symbols-outlined text-xs">check</span> Copied!';
-            setTimeout(() => {
-                copyBtn.innerHTML = '<span class="material-symbols-outlined text-xs">content_copy</span> Copy Code';
-            }, 2000);
         };
 
         // Submit Email (Phase 1)
@@ -648,7 +632,7 @@
                     setTimeout(() => otpBoxes[0].focus(), 50);
 
                     // Show mock toast
-                    showMockMailer(email, result.otp);
+                    showMockMailer(email);
                 } else {
                     errorText.innerText = result.message;
                     errorDiv.classList.remove('hidden');
@@ -679,7 +663,7 @@
                 if (result.success) {
                     resetOtpInputs();
                     otpBoxes[0].focus();
-                    showMockMailer(email, result.otp);
+                    showMockMailer(email);
                 }
             } catch (err) {}
         };

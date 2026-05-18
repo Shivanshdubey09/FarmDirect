@@ -180,8 +180,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'otp'     => $otp,
-            'message' => 'A 6-digit OTP code has been successfully generated and sent to your Gmail.'
+            'message' => 'A 6-digit OTP code has been successfully generated and sent to your email address.'
         ]);
     }
 
@@ -203,7 +202,7 @@ class AuthController extends Controller
 
         $expiresAt = $user->reset_otp_expires_at ? \Carbon\Carbon::parse($user->reset_otp_expires_at) : null;
 
-        if ($user->reset_otp !== $request->otp || !$expiresAt || $expiresAt->isPast()) {
+        if ((string)$user->reset_otp !== (string)$request->otp || !$expiresAt || $expiresAt->isPast()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid or expired OTP. Please try again.'
@@ -235,7 +234,7 @@ class AuthController extends Controller
 
         $expiresAt = $user->reset_otp_expires_at ? \Carbon\Carbon::parse($user->reset_otp_expires_at) : null;
 
-        if ($user->reset_otp !== $request->otp || !$expiresAt || $expiresAt->isPast()) {
+        if ((string)$user->reset_otp !== (string)$request->otp || !$expiresAt || $expiresAt->isPast()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Verification failed. OTP has expired or is invalid.'
