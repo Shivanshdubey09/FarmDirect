@@ -163,12 +163,12 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchUnreadNotifications();
 });
 
-// Inactivity Auto-Logout Timer (2 minutes of complete idleness)
+// Inactivity Auto-Logout Timer (5 minutes of complete idleness)
 if (!window.inactivityTimerInitialized) {
     window.inactivityTimerInitialized = true;
     (function() {
         let idleTime = 0;
-        const maxIdleTime = 120; // 120 seconds = 2 minutes
+        const maxIdleTime = 300; // 300 seconds = 5 minutes
 
         function resetTimer() {
             idleTime = 0;
