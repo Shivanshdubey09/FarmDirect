@@ -101,9 +101,30 @@
 @endif
 
 <script>
+    const activeUserId = "{{ auth()->user() ? auth()->user()->id : 'guest' }}";
+
+    function refreshChat() {
+        localStorage.removeItem('farmbot_chat_' + activeUserId);
+        const container = document.getElementById('ai-messages-list');
+        container.innerHTML = `
+            <div class="flex justify-start">
+                <div class="bg-white p-3 rounded-xl shadow-sm max-w-[80%]">
+                    <p class="text-sm">Hi! I am FarmBot. Ask me anything about the dashboard or your crops.</p>
+                    <span class="text-[10px] text-outline mt-1 block text-right">Just now</span>
+                </div>
+            </div>
+        `;
+    }
+
     function toggleAIChat() {
         const widget = document.getElementById('ai-chat-widget');
+        const isHiddenBefore = widget.classList.contains('hidden');
         widget.classList.toggle('hidden');
+        
+        // Refresh the chat session if we are on the help page and opening the widget
+        if (isHiddenBefore && window.location.pathname.includes('help')) {
+            refreshChat();
+        }
     }
 
     function showAIHome() {
@@ -132,6 +153,9 @@
         const widget = document.getElementById('ai-chat-widget');
         if (widget.classList.contains('hidden')) {
             widget.classList.remove('hidden');
+            if (window.location.pathname.includes('help')) {
+                refreshChat();
+            }
         }
         showAIMessages(); // Switch to messages tab
         const input = document.getElementById('ai-message-input');
@@ -144,14 +168,24 @@
     }
 
     function saveMessage(sender, text, time) {
-        let history = JSON.parse(localStorage.getItem('farmbot_chat')) || [];
+        let history = JSON.parse(localStorage.getItem('farmbot_chat_' + activeUserId)) || [];
         history.push({ sender, text, time });
-        localStorage.setItem('farmbot_chat', JSON.stringify(history));
+        localStorage.setItem('farmbot_chat_' + activeUserId, JSON.stringify(history));
     }
 
     function loadMessages() {
-        let history = JSON.parse(localStorage.getItem('farmbot_chat')) || [];
+        let history = JSON.parse(localStorage.getItem('farmbot_chat_' + activeUserId)) || [];
         const container = document.getElementById('ai-messages-list');
+        
+        // Reset container to the base default greeting
+        container.innerHTML = `
+            <div class="flex justify-start">
+                <div class="bg-white p-3 rounded-xl shadow-sm max-w-[80%]">
+                    <p class="text-sm">Hi! I am FarmBot. Ask me anything about the dashboard or your crops.</p>
+                    <span class="text-[10px] text-outline mt-1 block text-right">Just now</span>
+                </div>
+            </div>
+        `;
         
         history.forEach(msg => {
             const msgDiv = document.createElement('div');
@@ -177,7 +211,7 @@
     // Clear chat on logout
     document.addEventListener('submit', function(e) {
         if (e.target && e.target.id === 'logout-form') {
-            localStorage.removeItem('farmbot_chat');
+            localStorage.removeItem('farmbot_chat_' + activeUserId);
         }
     });
 
