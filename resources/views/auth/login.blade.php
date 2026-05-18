@@ -121,9 +121,9 @@
         </div>
     </nav>
 </header>
-<main class="flex-grow container mx-auto px-4 md:px-8 pt-32 pb-8 flex flex-col lg:flex-row gap-8 items-stretch">
+<main class="flex-grow container mx-auto px-4 md:px-8 pt-32 pb-8 flex flex-col-reverse lg:flex-row gap-8 items-stretch">
 <!-- Hero Visual Section -->
-<section class="flex-1 w-full relative overflow-hidden rounded-[2.5rem] min-h-[600px] lg:h-auto">
+<section class="flex-1 w-full relative overflow-hidden rounded-[2.5rem] min-h-[400px] md:min-h-[500px] lg:min-h-[600px] lg:h-auto">
 <img alt="Tractor in a farm field" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK6BM7uFqyyF0dRyDAIFqUwxaccJ0GNq0eFBAs092MYuq_6a_wACpxL1i3yb08Ls4FV6zlNCPBcNjB1C882Y2WTWe6xqKiEEhsOmdmTNqOuDp99l2Nn6mnOre_9eID-Vd_ivn38ufP3a1JiVYsJytucsoBsVsRSjkXQT5lW2LQsoElAzN7qdq4Lp5osuYlbR7RQcCh7TMIwnnCmwT-0T6mKygBla0lttW9OqvWmOs7OcYX6jEMAbx8V1n9RQrAXQ3PzuqyN8QcGJpa"/>
 <div class="absolute inset-0 bg-gradient-to-b from-blue-900/60 via-green-900/40 to-green-900/90 mix-blend-multiply"></div>
 <div class="relative h-full p-10 flex flex-col justify-between z-10 text-white">
