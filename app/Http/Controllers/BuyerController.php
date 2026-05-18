@@ -295,6 +295,8 @@ class BuyerController extends Controller
             'buyer_id' => \Auth::id(),
             'farmer_id' => (string)$crop->farmer_id,
             'amount' => (float) $request->amount,
+            'price' => (float) $request->amount,
+            'quantity' => (float) ($crop->quantity ?? 15),
             'status' => 'pending',
             'message' => $request->message ?? 'Interested in buying.'
         ]);
@@ -871,6 +873,135 @@ class BuyerController extends Controller
                     'created_at' => $order->created_at->format('M d, h:i A')
                 ];
             })
+        ]);
+    }
+
+    public function payBid(Request $request, $id)
+    {
+        $request->validate([
+            'payment_method' => 'required|string',
+            'rating' => 'nullable|integer|min:1|max:5',
+            'comment' => 'nullable|string|max:500'
+        ]);
+
+        $bid = \App\Models\Bid::findOrFail($id);
+        
+        if ($bid->buyer_id !== \Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized action.'], 403);
+        }
+
+        $crop = $bid->crop;
+        $farmer = $bid->farmer;
+        $buyer = \Auth::user();
+
+        // 1. Create the Order
+        $orderNumber = 'ORD-' . strtoupper(uniqid());
+        $trackingNumber = 'TRK-' . strtoupper(substr(uniqid(), -8));
+        $deliveryOtp = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        $price = (float)($bid->price ?? $bid->amount);
+        $quantity = (float)($bid->quantity ?? ($crop->quantity ?? 15));
+
+        $order = Order::create([
+            'order_number'   => $orderNumber,
+            'farmer_id'      => (string)$bid->farmer_id,
+            'buyer_id'       => (string)$buyer->id,
+            'items'          => [
+                [
+                    'crop_id'  => $bid->crop_id,
+                    'name'     => $crop->name ?? 'Crop Listing',
+                    'quantity' => $quantity,
+                    'price'    => $price,
+                    'unit'     => $crop->unit ?? 'kg',
+                ]
+            ],
+            'total_price'    => $price * $quantity,
+            'status'         => 'processing',
+            'payment_status' => 'paid',
+            'tracking_number'=> $trackingNumber,
+            'payment_method' => $request->payment_method
+        ]);
+
+        if ($crop) {
+            $crop->decrement('quantity', $quantity);
+        }
+
+        // 2. Create Logistics record
+        \App\Models\Logistics::create([
+            'farmer_id'        => (string)$bid->farmer_id,
+            'buyer_id'         => (string)$buyer->id,
+            'order_id'         => (string)$order->id,
+            'crop_id'          => $bid->crop_id,
+            'crop_name'        => $crop->name ?? 'Crop Listing',
+            'quantity'         => $quantity,
+            'unit'             => $crop->unit ?? 'kg',
+            'buyer_name'       => $buyer->name,
+            'farmer_name'      => $farmer->name ?? 'Farmer',
+            'tracking_number'  => $trackingNumber,
+            'status'           => 'Pending Pickup',
+            'provider'         => 'FarmDirect Express',
+            'delivery_otp'     => $deliveryOtp,
+            'otp_verified'     => false,
+            'pickup_address'   => $farmer->city ?? 'Farm Location',
+            'delivery_address' => $buyer->city ?? 'Buyer Address',
+            'eta'              => now()->addDays(3)->format('D, d M Y'),
+            'history'          => [
+                [
+                    'status' => 'Pending Pickup',
+                    'timestamp' => now()->toIso8601String(),
+                    'location' => 'System',
+                    'description' => 'Bid accepted order placed successfully via Pay & Confirm.',
+                ]
+            ],
+        ]);
+
+        // 3. Create the Review (if provided)
+        if ($request->filled('rating')) {
+            \App\Models\Review::create([
+                'order_id' => (string)$order->id,
+                'reviewer_id' => (string)$buyer->id,
+                'reviewee_id' => (string)$bid->farmer_id,
+                'rating' => (int)$request->rating,
+                'comment' => $request->comment ?? 'Great transaction!',
+                'created_at' => now(),
+            ]);
+        }
+
+        // 4. Create Chat room
+        \App\Models\Chat::create([
+            'participants' => [(string)$buyer->id, (string)$bid->farmer_id],
+            'product_id' => $bid->crop_id
+        ]);
+
+        // 5. Update Bid status to paid
+        $bid->update(['status' => 'paid']);
+
+        // 6. Notify farmer
+        \App\Models\Notification::create([
+            'user_id'    => $bid->farmer_id,
+            'type'       => 'order',
+            'title'      => 'Order Paid & Confirmed! 💰',
+            'message'    => "Buyer {$buyer->name} completed payment for {$crop->name}. Order #{$orderNumber} is processing.",
+            'is_read'    => false,
+            'created_at' => now(),
+            'data'       => ['url' => route('farmer.dashboard')],
+        ]);
+
+        // 7. Notify buyer
+        \App\Models\Notification::create([
+            'user_id' => $buyer->id,
+            'type' => 'success',
+            'title' => 'Payment Confirmed! 🎉',
+            'message' => "Order #{$orderNumber} has been successfully paid and created.",
+            'is_read' => false,
+            'created_at' => now(),
+            'data' => ['url' => route('buyer.logistics')]
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Payment confirmed and order placed successfully!',
+            'order_id' => (string)$order->id
         ]);
     }
 }

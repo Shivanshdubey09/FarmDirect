@@ -1234,7 +1234,14 @@ function refreshMandiPrices() {
   if (syncIcon) syncIcon.classList.add('animate-spin');
   
   fetch('/api/dashboard/admin/stats')
-    .then(r => r.json())
+    .then(r => {
+      const contentType = r.headers.get('content-type');
+      if (contentType && contentType.includes('text/html')) {
+        window.location.reload();
+        return;
+      }
+      return r.json();
+    })
     .then(data => {
       const mandiList = document.getElementById('mandi-price-list');
       if (mandiList && data.mandi_prices) {
@@ -1367,7 +1374,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 setInterval(() => {
   fetch('/api/dashboard/admin/stats')
-    .then(r => r.json())
+    .then(r => {
+      const contentType = r.headers.get('content-type');
+      if (contentType && contentType.includes('text/html')) {
+        window.location.reload();
+        return;
+      }
+      return r.json();
+    })
     .then(d => {
       if (d.success) {
         // Farmers Stats

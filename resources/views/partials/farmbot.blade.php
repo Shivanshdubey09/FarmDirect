@@ -319,4 +319,50 @@
             toggleAIChat();
         }
     }
+
+    // Inactivity Auto-Logout Timer (2 minutes of complete idleness)
+    if (!window.inactivityTimerInitialized) {
+        window.inactivityTimerInitialized = true;
+        (function() {
+            let idleTime = 0;
+            const maxIdleTime = 120; // 120 seconds = 2 minutes
+
+            function resetTimer() {
+                idleTime = 0;
+            }
+
+            // Increment idle timer every second
+            const idleInterval = setInterval(function() {
+                idleTime++;
+                if (idleTime >= maxIdleTime) {
+                    clearInterval(idleInterval);
+                    logoutUser();
+                }
+            }, 1000);
+
+            function logoutUser() {
+                let logoutForm = document.getElementById('logout-form');
+                if (logoutForm) {
+                    logoutForm.submit();
+                } else {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/logout';
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = '{{ csrf_token() }}';
+                    form.appendChild(csrfInput);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+
+            // Reset timer on user interaction events
+            const events = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'];
+            events.forEach(function(evt) {
+                document.addEventListener(evt, resetTimer, true);
+            });
+        })();
+    }
 </script>

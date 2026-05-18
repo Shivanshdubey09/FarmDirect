@@ -97,6 +97,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/buyer/discover', [App\Http\Controllers\BuyerController::class, 'discover'])->name('buyer.discover');
     Route::get('/dashboard/buyer/bids', [App\Http\Controllers\BuyerController::class, 'myBids'])->name('buyer.bids');
+    Route::post('/dashboard/buyer/bids/{id}/pay', [App\Http\Controllers\BuyerController::class, 'payBid'])->name('bids.pay');
     Route::get('/dashboard/buyer/saved', [App\Http\Controllers\BuyerController::class, 'saved'])->name('buyer.saved');
     Route::get('/dashboard/buyer/logistics', [App\Http\Controllers\BuyerController::class, 'logistics'])->name('buyer.logistics');
     Route::get('/dashboard/buyer/orders', [App\Http\Controllers\BuyerController::class, 'orders'])->name('buyer.orders');

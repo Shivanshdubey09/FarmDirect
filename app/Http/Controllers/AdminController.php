@@ -33,11 +33,11 @@ class AdminController extends Controller
         $suspendedBuyers  = User::where('role', 'buyer')->where('is_suspended', true)->count();
 
         $totalOrders      = Order::count();
-        $completedOrders  = Order::where('status', 'completed')->count();
+        $completedOrders  = Order::where('status', '!=', 'cancelled')->count();
         $pendingOrders    = Order::whereIn('status', ['pending', 'processing'])->count();
 
-        // Total Revenue from completed orders
-        $totalRevenue = Order::where('status', 'completed')->sum('total_price') ?? 0;
+        // Total Revenue from all non-cancelled orders
+        $totalRevenue = Order::where('status', '!=', 'cancelled')->sum('total_price') ?? 0;
 
         // Active Logistics Pipelines
         $activeLogistics = Logistics::whereNotIn('status', ['Delivered'])->count();
@@ -60,7 +60,7 @@ class AdminController extends Controller
                        ->map(function ($farmer) {
                            $farmer->crop_count = Crop::where('farmer_id', (string)$farmer->id)->count();
                            $farmer->total_sales = Order::where('farmer_id', (string)$farmer->id)
-                                                       ->where('status', 'completed')
+                                                       ->where('status', '!=', 'cancelled')
                                                        ->sum('total_price') ?? 0;
                            $farmer->active_orders = Order::where('farmer_id', (string)$farmer->id)
                                                          ->whereIn('status', ['pending', 'processing'])
@@ -95,7 +95,7 @@ class AdminController extends Controller
                       ->get()
                       ->map(function ($buyer) {
                           $buyer->total_purchases = Order::where('buyer_id', (string)$buyer->id)
-                                                        ->where('status', 'completed')
+                                                        ->where('status', '!=', 'cancelled')
                                                         ->sum('total_price') ?? 0;
                           $buyer->active_orders = Order::where('buyer_id', (string)$buyer->id)
                                                        ->whereIn('status', ['pending', 'processing'])
@@ -511,8 +511,8 @@ class AdminController extends Controller
             'suspended_buyers' => User::where('role', 'buyer')->where('is_suspended', true)->count(),
             'total_orders'     => Order::count(),
             'pending_orders'   => Order::whereIn('status', ['pending', 'processing'])->count(),
-            'completed_orders' => Order::where('status', 'completed')->count(),
-            'total_revenue'    => Order::where('status', 'completed')->sum('total_price') ?? 0,
+            'completed_orders' => Order::where('status', '!=', 'cancelled')->count(),
+            'total_revenue'    => Order::where('status', '!=', 'cancelled')->sum('total_price') ?? 0,
             'active_logistics' => Logistics::whereNotIn('status', ['Delivered'])->count(),
             'total_bids'       => $totalBids,
             'accepted_bids'    => $acceptedBids,

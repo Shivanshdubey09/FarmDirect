@@ -207,9 +207,13 @@
                     </div>
                 </div>
                 @if($bid->status === 'accepted')
-                    <a href="{{ route('buyer.orders') }}" class="text-primary font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:gap-3 transition-all">
-                        View Order <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                    </a>
+                    <button onclick="openPaymentModal('{{ $bid->id }}', '{{ $bid->crop->name ?? 'Crop Listing' }}', '{{ $bid->quantity }}', '{{ $bid->price }}', '{{ $bid->crop->farmer->name ?? 'Farmer' }}')" class="px-4 py-2 bg-primary text-white font-black text-[10px] uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20 hover:bg-primary/90 flex items-center gap-2 transition-all">
+                        Pay & Confirm <span class="material-symbols-outlined text-sm">payments</span>
+                    </button>
+                @elseif($bid->status === 'paid')
+                    <span class="text-green-600 font-black text-[10px] uppercase tracking-widest flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">check_circle</span> Paid & Confirmed
+                    </span>
                 @elseif($bid->status === 'pending')
                     <span class="text-stone-400 font-black text-[10px] uppercase tracking-widest flex items-center gap-2">
                         <span class="material-symbols-outlined text-sm">hourglass_empty</span> Waiting
@@ -236,6 +240,232 @@
 </main>
 @include('partials.buyer_footer')
 @include('partials.live_notifications')
+
+<!-- Premium Payment & Review Modal -->
+<div id="payment-modal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-md z-[9999] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white w-[550px] max-w-[90%] rounded-[2.5rem] p-8 shadow-[0_30px_70px_rgba(0,0,0,0.15)] border border-stone-100 transform scale-95 transition-transform duration-300 relative overflow-hidden">
+        <!-- Close Button -->
+        <button onclick="closePaymentModal()" class="absolute top-6 right-6 w-10 h-10 rounded-full hover:bg-stone-100 flex items-center justify-center text-stone-400 hover:text-stone-700 transition-colors">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <!-- Header -->
+        <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-2xl">shopping_bag</span>
+            </div>
+            <div>
+                <h3 class="text-xl font-black text-stone-900 tracking-tight">Checkout & Review</h3>
+                <p class="text-xs text-stone-500 font-medium">Complete payment and rate the farmer to confirm order.</p>
+            </div>
+        </div>
+
+        <form id="payment-form" onsubmit="submitPayment(event)">
+            @csrf
+            <input type="hidden" id="modal-bid-id" name="bid_id">
+
+            <!-- Summary Card -->
+            <div class="bg-stone-50 rounded-3xl p-5 mb-6 border border-stone-100 flex justify-between items-center">
+                <div>
+                    <h4 id="modal-crop-name" class="text-sm font-black text-stone-800">Crop Name</h4>
+                    <p class="text-xs text-stone-500 font-medium mt-0.5"><span id="modal-crop-qty">0</span> units @ ₹<span id="modal-crop-price">0</span>/unit</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] font-black text-stone-400 uppercase tracking-widest leading-none mb-1">Total Payable</p>
+                    <p class="text-lg font-black text-primary">₹<span id="modal-total-payable">0</span></p>
+                </div>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="mb-6">
+                <label class="text-xs font-black text-stone-800 uppercase tracking-widest block mb-3">Select Payment Method</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <label class="border-2 border-stone-100 hover:border-primary/30 rounded-2xl p-4 flex flex-col items-center gap-2 cursor-pointer transition-all relative" onclick="selectPaymentMethod('upi')">
+                        <input type="radio" name="payment_method" value="UPI" class="absolute top-3 right-3 accent-primary" checked>
+                        <span class="material-symbols-outlined text-2xl text-stone-600">qr_code_2</span>
+                        <span class="text-xs font-bold text-stone-700">UPI / QR</span>
+                    </label>
+                    <label class="border-2 border-stone-100 hover:border-primary/30 rounded-2xl p-4 flex flex-col items-center gap-2 cursor-pointer transition-all relative" onclick="selectPaymentMethod('card')">
+                        <input type="radio" name="payment_method" value="Card" class="absolute top-3 right-3 accent-primary">
+                        <span class="material-symbols-outlined text-2xl text-stone-600">credit_card</span>
+                        <span class="text-xs font-bold text-stone-700">Debit / Card</span>
+                    </label>
+                    <label class="border-2 border-stone-100 hover:border-primary/30 rounded-2xl p-4 flex flex-col items-center gap-2 cursor-pointer transition-all relative" onclick="selectPaymentMethod('netbanking')">
+                        <input type="radio" name="payment_method" value="Netbanking" class="absolute top-3 right-3 accent-primary">
+                        <span class="material-symbols-outlined text-2xl text-stone-600">account_balance</span>
+                        <span class="text-xs font-bold text-stone-700">Net Banking</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Dynamic Payment Fields -->
+            <div id="payment-fields-upi" class="bg-stone-50 rounded-3xl p-5 mb-6 border border-stone-100">
+                <label class="text-xs font-black text-stone-700 uppercase tracking-widest block mb-2">UPI ID / Phone Number</label>
+                <input type="text" class="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 text-sm font-semibold text-stone-800 focus:outline-none focus:border-primary" placeholder="name@upi">
+            </div>
+            
+            <div id="payment-fields-card" class="bg-stone-50 rounded-3xl p-5 mb-6 border border-stone-100 hidden">
+                <label class="text-xs font-black text-stone-700 uppercase tracking-widest block mb-2">Card Number</label>
+                <input type="text" class="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 text-sm font-semibold text-stone-800 focus:outline-none focus:border-primary mb-3" placeholder="XXXX XXXX XXXX XXXX">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-[10px] font-black text-stone-500 uppercase tracking-widest block mb-1">Expiry</label>
+                        <input type="text" class="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm font-semibold text-stone-800 focus:outline-none" placeholder="MM/YY">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-stone-500 uppercase tracking-widest block mb-1">CVV</label>
+                        <input type="password" class="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm font-semibold text-stone-800 focus:outline-none" placeholder="***">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review / Rating Section -->
+            <div class="mb-6">
+                <label class="text-xs font-black text-stone-800 uppercase tracking-widest block mb-2">Rate Farmer <span id="modal-farmer-name" class="text-primary font-black">Farmer</span></label>
+                <div class="flex items-center gap-2 mb-3">
+                    <input type="hidden" id="modal-rating" name="rating" value="5">
+                    @for($i = 1; $i <= 5; $i++)
+                        <span onclick="setRating({{ $i }})" onmouseover="hoverRating({{ $i }})" onmouseout="resetRating()" class="star-rating material-symbols-outlined text-3xl text-amber-400 cursor-pointer transition-all hover:scale-110 fill-icon" data-value="{{ $i }}">star</span>
+                    @endfor
+                    <span id="rating-label" class="text-xs font-bold text-amber-500 ml-2">Excellent (5/5)</span>
+                </div>
+                <label class="text-xs font-black text-stone-800 uppercase tracking-widest block mb-2">Leave a Review (Optional)</label>
+                <textarea name="comment" rows="2" class="w-full border border-stone-200 rounded-2xl p-4 text-sm font-medium text-stone-800 focus:outline-none focus:border-primary" placeholder="How was your bidding and communication experience with the farmer?"></textarea>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" id="btn-pay-submit" class="w-full bg-primary text-white font-black py-4 rounded-2xl uppercase tracking-widest hover:bg-primary/95 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                <span>Confirm Payment</span>
+                <span class="material-symbols-outlined text-lg">verified_user</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openPaymentModal(bidId, cropName, qty, price, farmerName) {
+        document.getElementById('modal-bid-id').value = bidId;
+        document.getElementById('modal-crop-name').innerText = cropName;
+        document.getElementById('modal-crop-qty').innerText = qty;
+        document.getElementById('modal-crop-price').innerText = Number(price).toFixed(2);
+        document.getElementById('modal-farmer-name').innerText = farmerName;
+        document.getElementById('modal-total-payable').innerText = (Number(qty) * Number(price)).toFixed(2);
+        
+        const modal = document.getElementById('payment-modal');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modal.querySelector('div').classList.remove('scale-95');
+        }, 50);
+    }
+
+    function closePaymentModal() {
+        const modal = document.getElementById('payment-modal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    function selectPaymentMethod(type) {
+        document.getElementById('payment-fields-upi').classList.add('hidden');
+        document.getElementById('payment-fields-card').classList.add('hidden');
+        
+        if (type === 'upi') {
+            document.getElementById('payment-fields-upi').classList.remove('hidden');
+        } else if (type === 'card') {
+            document.getElementById('payment-fields-card').classList.remove('hidden');
+        }
+    }
+
+    let currentRating = 5;
+    const ratingTexts = {
+        1: 'Poor (1/5)',
+        2: 'Fair (2/5)',
+        3: 'Good (3/5)',
+        4: 'Very Good (4/5)',
+        5: 'Excellent (5/5)'
+    };
+
+    function setRating(val) {
+        currentRating = val;
+        document.getElementById('modal-rating').value = val;
+        updateStars(val);
+    }
+
+    function hoverRating(val) {
+        updateStars(val);
+    }
+
+    function resetRating() {
+        updateStars(currentRating);
+    }
+
+    function updateStars(val) {
+        const stars = document.querySelectorAll('.star-rating');
+        stars.forEach(star => {
+            const starVal = Number(star.getAttribute('data-value'));
+            if (starVal <= val) {
+                star.classList.add('text-amber-400', 'fill-icon');
+                star.classList.remove('text-stone-300');
+            } else {
+                star.classList.remove('text-amber-400', 'fill-icon');
+                star.classList.add('text-stone-300');
+            }
+        });
+        document.getElementById('rating-label').innerText = ratingTexts[val] || '';
+    }
+
+    function submitPayment(e) {
+        e.preventDefault();
+        const bidId = document.getElementById('modal-bid-id').value;
+        const submitBtn = document.getElementById('btn-pay-submit');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-lg">sync</span> <span>Processing Payment...</span>';
+
+        const formData = new FormData(document.getElementById('payment-form'));
+
+        fetch(`/dashboard/buyer/bids/${bidId}/pay`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                submitBtn.innerHTML = '<span class="material-symbols-outlined text-lg">check_circle</span> <span>Paid successfully!</span>';
+                submitBtn.classList.remove('bg-primary');
+                submitBtn.classList.add('bg-green-600');
+                
+                // Show floating toast
+                if (window.showToast) {
+                    window.showToast({
+                        title: 'Payment Successful! 🎉',
+                        message: 'Your order was successfully paid and initialized.',
+                        type: 'success'
+                    });
+                }
+                
+                setTimeout(() => {
+                    window.location.href = '{{ route("buyer.logistics") }}';
+                }, 2000);
+            } else {
+                alert(data.message || 'Error occurred during payment. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Confirm Payment</span> <span class="material-symbols-outlined text-lg">verified_user</span>';
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Error occurred. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>Confirm Payment</span> <span class="material-symbols-outlined text-lg">verified_user</span>';
+        });
+    }
+</script>
 
 </body>
 </html>

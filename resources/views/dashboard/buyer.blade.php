@@ -825,7 +825,14 @@
 
     function refreshBuyerStats() {
         fetch('/api/dashboard/buyer/stats')
-            .then(response => response.json())
+            .then(response => {
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('text/html')) {
+                    window.location.reload();
+                    return;
+                }
+                return response.json();
+            })
             .then(data => {
                 // Update Chart
                 if (typeof spendingChart !== 'undefined' && data.spendingData) {

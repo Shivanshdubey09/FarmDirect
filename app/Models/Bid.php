@@ -14,6 +14,8 @@ class Bid extends Model
         'buyer_id',
         'farmer_id',
         'amount',
+        'price',
+        'quantity',
         'status',
         'message',
         'counter_amount'

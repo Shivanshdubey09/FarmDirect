@@ -1252,7 +1252,14 @@
             if (statusEl) statusEl.classList.remove('hidden');
 
             fetch('/api/dashboard/farmer/stats')
-                .then(response => response.json())
+                .then(response => {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('text/html')) {
+                        window.location.reload();
+                        return;
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (statusEl) statusEl.classList.add('hidden');
                     // Update Revenue (Procurement)

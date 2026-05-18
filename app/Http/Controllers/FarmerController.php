@@ -51,7 +51,7 @@ class FarmerController extends Controller
 
         // Fetch Stats
         $revenue = Order::where('farmer_id', (string)$user->id)
-                        ->whereIn('status', ['completed', 'processing', 'delivered']) // Including processing and delivered for demo visual impact
+                        ->where('status', '!=', 'cancelled')
                         ->sum('total_price');
 
         // Fetch Weather Data (Cached for 1 hour)
@@ -85,7 +85,7 @@ class FarmerController extends Controller
         // Generate chart data (last 7 days)
         $revenueData = [0, 0, 0, 0, 0, 0, 0]; // Start at zero
         $chartOrders = Order::where('farmer_id', (string)$user->id)
-                        ->whereIn('status', ['completed', 'processing', 'delivered'])
+                        ->where('status', '!=', 'cancelled')
                         ->where('created_at', '>=', now()->subDays(7))
                         ->get();
         
@@ -470,65 +470,15 @@ class FarmerController extends Controller
             $crop->update(['price_per_unit' => (float)$bid->amount]);
         }
 
-        // Create an Order to track progress
-        $order = \App\Models\Order::create([
-            'order_number' => 'ORD-' . strtoupper(uniqid()),
-            'farmer_id' => \Auth::id(),
-            'buyer_id' => $bid->buyer_id,
-            'items' => [
-                [
-                    'crop_id' => $bid->crop_id,
-                    'name' => $crop->name ?? 'Crop',
-                    'quantity' => $crop->quantity ?? 1,
-                    'price' => (float)$bid->amount,
-                    'unit' => $crop->unit ?? 'kg'
-                ]
-            ],
-            'total_price' => (float)$bid->amount * (float)($crop->quantity ?? 1),
-            'status' => 'processing',
-            'payment_status' => 'unpaid'
-        ]);
-
-        // Create a Logistics record automatically
-        \App\Models\Logistics::create([
-            'farmer_id' => \Auth::id(),
-            'buyer_id' => $bid->buyer_id,
-            'order_id' => (string)$order->id,
-            'crop_id' => $bid->crop_id,
-            'crop_name' => $crop->name ?? 'Crop',
-            'quantity' => $crop->quantity ?? 1,
-            'unit' => $crop->unit ?? 'kg',
-            'buyer_name' => $buyer->name ?? 'Buyer',
-            'status' => 'Pending Pickup',
-            'provider' => 'Kisan Logistics',
-            'tracking_number' => 'FD-' . rand(100, 999),
-            'delivery_otp' => str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT), // Generate 6 digit OTP
-            'otp_verified' => false,
-            'history' => [
-                [
-                    'status' => 'Pending Pickup',
-                    'timestamp' => now()->toIso8601String(),
-                    'location' => 'System',
-                    'description' => 'Farmer has accepted the order and is preparing for pickup.',
-                ]
-            ],
-        ]);
-
-        // Create a Chat record
-        \App\Models\Chat::create([
-            'participants' => [\Auth::id(), $bid->buyer_id],
-            'product_id' => $bid->crop_id
-        ]);
-
         // Create a notification for the farmer
         \App\Models\Notification::create([
             'user_id' => \Auth::id(),
-            'type' => 'order',
+            'type' => 'success',
             'title' => 'Bid Accepted',
-            'message' => 'You have accepted a bid for ' . ($crop->name ?? 'crop') . '. Order and logistics tracking created.',
+            'message' => 'You have accepted the bid for ' . ($crop->name ?? 'crop') . '. Awaiting buyer payment.',
             'is_read' => false,
             'created_at' => now(),
-            'data' => ['url' => route('farmer.dashboard')]
+            'data' => ['url' => route('farmer.bids')]
         ]);
 
         // Create a notification for the buyer
@@ -536,10 +486,10 @@ class FarmerController extends Controller
             'user_id' => $bid->buyer_id,
             'type' => 'success',
             'title' => 'Bid Accepted! 🎉',
-            'message' => 'Your bid of ₹' . $bid->amount . ' for ' . ($crop->name ?? 'crop') . ' has been accepted by the farmer!',
+            'message' => 'Your bid of ₹' . $bid->amount . ' for ' . ($crop->name ?? 'crop') . ' has been accepted by the farmer! Pay & Confirm now.',
             'is_read' => false,
             'created_at' => now(),
-            'data' => ['url' => route('buyer.logistics')]
+            'data' => ['url' => route('buyer.bids')]
         ]);
 
         return response()->json(['success' => true]);
@@ -712,7 +662,7 @@ class FarmerController extends Controller
         $user = auth()->user();
         
         $revenue = Order::where('farmer_id', (string)$user->id)
-                        ->whereIn('status', ['completed', 'processing', 'delivered'])
+                        ->where('status', '!=', 'cancelled')
                         ->sum('total_price');
                         
         $activeOrdersCount = Order::where('farmer_id', (string)$user->id)
