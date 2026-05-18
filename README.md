@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/Shivanshdubey09/FarmDirect" target="_blank">
-    <img src="public/favicon.png" width="100" alt="FarmDirect Logo">
+    <img src="public/images/leaf_clean.png" width="120" alt="FarmDirect Logo">
   </a>
 </p>
 
