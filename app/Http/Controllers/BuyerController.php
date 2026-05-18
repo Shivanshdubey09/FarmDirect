@@ -139,7 +139,7 @@ class BuyerController extends Controller
                 return back()->with('error', 'Insufficient stock for ' . $item['name']);
             }
             
-            $farmerId = $crop->farmer_id;
+            $farmerId = (string)$crop->farmer_id;
             if (!isset($itemsByFarmer[$farmerId])) {
                 $itemsByFarmer[$farmerId] = [
                     'farmer' => $crop->farmer,
@@ -150,14 +150,14 @@ class BuyerController extends Controller
             $itemsByFarmer[$farmerId]['items'][] = [
                 'crop_id' => $crop->id,
                 'name' => $crop->name,
-                'quantity' => $item['quantity'],
-                'price' => $item['price'],
+                'quantity' => (float)$item['quantity'],
+                'price' => (float)$item['price'],
                 'unit' => $crop->unit ?? 'kg',
             ];
-            $itemsByFarmer[$farmerId]['total_price'] += $item['price'] * $item['quantity'];
+            $itemsByFarmer[$farmerId]['total_price'] += (float)$item['price'] * (float)$item['quantity'];
             
             // Update crop quantity
-            $crop->decrement('quantity', $item['quantity']);
+            $crop->decrement('quantity', (float)$item['quantity']);
         }
         
         foreach ($itemsByFarmer as $farmerId => $farmerData) {
@@ -464,7 +464,7 @@ class BuyerController extends Controller
         // Restore crop quantity
         foreach ($order->items ?? [] as $item) {
             $crop = \App\Models\Crop::find($item['crop_id'] ?? null);
-            if ($crop) $crop->increment('quantity', $item['quantity'] ?? 0);
+            if ($crop) $crop->increment('quantity', (float)($item['quantity'] ?? 0));
         }
 
         // Notify farmer
