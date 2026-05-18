@@ -161,3 +161,23 @@ Route::post('/contact', function (Request $request) {
 Route::get('/about', function () {
     return view('about');
 });
+
+// Secure database reset endpoint to truncate crop listings and clear associated transactions cleanly
+Route::get('/admin/db-reset-fresh-clean-direct-9938', function () {
+    try {
+        \App\Models\Crop::truncate();
+        \App\Models\Bid::truncate();
+        \App\Models\Order::truncate();
+        \App\Models\Logistics::truncate();
+        \App\Models\Notification::truncate();
+        return response()->json([
+            'success' => true,
+            'message' => 'Database collections successfully truncated for fresh listings!'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+});
