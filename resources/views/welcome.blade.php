@@ -936,18 +936,7 @@
         });
     });
 
-    // Graceful Preloader Dismissal
-    window.addEventListener('load', () => {
-        const preloader = document.getElementById('preloader');
-        if (preloader) {
-            preloader.classList.add('opacity-0', 'pointer-events-none', 'scale-105');
-            setTimeout(() => {
-                preloader.remove();
-            }, 800);
-        }
-    });
-
-    // Safety fallback timeout (3s)
+    // Keep the preloader visible for exactly 5 seconds before loading the landing page
     setTimeout(() => {
         const preloader = document.getElementById('preloader');
         if (preloader) {
@@ -956,6 +945,6 @@
                 preloader.remove();
             }, 800);
         }
-    }, 3000);
+    }, 5000);
 </script>
 </body></html>
