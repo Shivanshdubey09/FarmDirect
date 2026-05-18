@@ -13,6 +13,11 @@ Route::get('/login', [\App\Http\Controllers\AuthController::class, 'showLoginFor
 Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
+// Forgot Password API routes
+Route::post('/forgot-password/send-otp', [\App\Http\Controllers\AuthController::class, 'sendResetOtp']);
+Route::post('/forgot-password/verify-otp', [\App\Http\Controllers\AuthController::class, 'verifyResetOtp']);
+Route::post('/forgot-password/reset', [\App\Http\Controllers\AuthController::class, 'resetPassword']);
+
 Route::get('/register', [\App\Http\Controllers\AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register']);
 

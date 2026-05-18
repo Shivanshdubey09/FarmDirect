@@ -124,6 +124,116 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         return redirect('/login');
     }
+
+    // ─── Forgot Password ──────────────────────────────────────────────────────
+
+    public function sendResetOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'role'  => 'required|in:farmer,buyer',
+        ]);
+
+        $user = User::where('email', $request->email)
+                    ->where('role', $request->role)
+                    ->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No account found with this email and role combination.'
+            ]);
+        }
+
+        if ($user->is_suspended) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Your account is suspended. Password reset is not permitted.'
+            ]);
+        }
+
+        $otp = rand(100000, 999999);
+        $user->reset_otp = $otp;
+        $user->reset_otp_expires_at = now()->addMinutes(10)->toDateTimeString();
+        $user->save();
+
+        // Log OTP locally for backend debugging
+        \Log::info("Password Reset OTP for {$request->email} ({$request->role}): {$otp}");
+
+        return response()->json([
+            'success' => true,
+            'otp'     => $otp,
+            'message' => 'A 6-digit OTP code has been successfully generated.'
+        ]);
+    }
+
+    public function verifyResetOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'role'  => 'required|in:farmer,buyer',
+            'otp'   => 'required|numeric|digits:6',
+        ]);
+
+        $user = User::where('email', $request->email)
+                    ->where('role', $request->role)
+                    ->first();
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'No account found.']);
+        }
+
+        $expiresAt = $user->reset_otp_expires_at ? \Carbon\Carbon::parse($user->reset_otp_expires_at) : null;
+
+        if ($user->reset_otp !== $request->otp || !$expiresAt || $expiresAt->isPast()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired OTP. Please try again.'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'OTP verified successfully.'
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'role'     => 'required|in:farmer,buyer',
+            'otp'      => 'required|numeric|digits:6',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::where('email', $request->email)
+                    ->where('role', $request->role)
+                    ->first();
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'No account found.']);
+        }
+
+        $expiresAt = $user->reset_otp_expires_at ? \Carbon\Carbon::parse($user->reset_otp_expires_at) : null;
+
+        if ($user->reset_otp !== $request->otp || !$expiresAt || $expiresAt->isPast()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Verification failed. OTP has expired or is invalid.'
+            ]);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->reset_otp = null;
+        $user->reset_otp_expires_at = null;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your password has been successfully updated!'
+        ]);
+    }
 }
 
 

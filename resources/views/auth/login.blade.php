@@ -205,6 +205,7 @@
     <div>
         <div class="flex justify-between items-center mb-2">
             <label class="block text-[10px] font-extrabold tracking-[0.15em] text-gray-400 uppercase">Password</label>
+            <a href="javascript:void(0)" onclick="openForgotPasswordModal()" class="text-[10px] font-extrabold tracking-[0.15em] text-primary hover:text-green-300 uppercase transition-all">Forgot password?</a>
         </div>
         <input
             name="password"
@@ -276,6 +277,165 @@
 </div>
 </div>
 </footer>
+
+<!-- Forgot Password Glassmorphic Modal -->
+<div id="forgot-password-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md hidden transition-all duration-300 opacity-0">
+    <div class="w-full max-w-md bg-[#111827] rounded-[2rem] p-8 border border-gray-800 text-white shadow-2xl relative overflow-hidden transition-all transform scale-95 duration-300" id="forgot-password-modal-content">
+        <!-- Close Button -->
+        <button onclick="closeForgotPasswordModal()" class="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors">
+            <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+
+        <!-- Phase 1: Request OTP -->
+        <div id="fp-phase-1" class="space-y-6">
+            <div class="mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gray-800 flex items-center justify-center border border-gray-700 shadow-inner mb-6">
+                    <span class="material-symbols-outlined text-primary text-2xl">lock_reset</span>
+                </div>
+                <h3 class="text-2xl font-extrabold tracking-tight">Reset password</h3>
+                <p class="text-gray-400 text-xs mt-1 leading-relaxed font-medium">Enter your registered email and choose your role to request a secure 6-digit OTP code.</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-extrabold tracking-[0.15em] text-gray-400 mb-2 uppercase">Account Role</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label id="fp-label-farmer" for="fp-role-farmer" class="cursor-pointer flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-gray-700 bg-gray-800 text-xs font-bold transition-all hover:border-primary/50 text-gray-300">
+                            <input type="radio" name="fp_role" id="fp-role-farmer" value="farmer" class="hidden" checked />
+                            <span class="material-symbols-outlined text-sm">agriculture</span> Farmer
+                        </label>
+                        <label id="fp-label-buyer" for="fp-role-buyer" class="cursor-pointer flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-gray-700 bg-gray-800 text-xs font-bold transition-all hover:border-amber-500/50 text-gray-300">
+                            <input type="radio" name="fp_role" id="fp-role-buyer" value="buyer" class="hidden" />
+                            <span class="material-symbols-outlined text-sm">storefront</span> Buyer
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-extrabold tracking-[0.15em] text-gray-400 mb-2 uppercase">Email Address</label>
+                    <input type="email" id="fp-email" class="w-full bg-[#1F2937] border border-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner text-sm font-medium placeholder-gray-600" placeholder="Enter your email" />
+                </div>
+
+                <div id="fp-p1-error" class="hidden text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">error</span>
+                    <span id="fp-p1-error-text">Error message</span>
+                </div>
+
+                <button onclick="submitForgotPasswordEmail()" id="fp-p1-submit" class="w-full bg-[#6EE7B7] hover:bg-[#34D399] text-gray-900 font-extrabold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(110,231,183,0.2)] font-display uppercase tracking-widest text-[10px]">
+                    Send Verification Code <span class="material-symbols-outlined text-lg">send</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Phase 2: Verify OTP -->
+        <div id="fp-phase-2" class="space-y-6 hidden">
+            <div class="mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gray-800 flex items-center justify-center border border-gray-700 shadow-inner mb-6">
+                    <span class="material-symbols-outlined text-primary text-2xl">password</span>
+                </div>
+                <h3 class="text-2xl font-extrabold tracking-tight">Verify Code</h3>
+                <p class="text-gray-400 text-xs mt-1 leading-relaxed font-medium">A secure 6-digit OTP code has been dispatched. Enter the verification code below to verify your identity.</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-extrabold tracking-[0.15em] text-gray-400 mb-2 uppercase text-center">Enter 6-Digit OTP</label>
+                    <div class="flex justify-between gap-2 max-w-xs mx-auto" id="otp-inputs-container">
+                        <input type="text" maxlength="1" class="otp-box w-12 h-12 bg-[#1F2937] border-2 border-gray-700 text-white rounded-xl text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner" />
+                        <input type="text" maxlength="1" class="otp-box w-12 h-12 bg-[#1F2937] border-2 border-gray-700 text-white rounded-xl text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner" />
+                        <input type="text" maxlength="1" class="otp-box w-12 h-12 bg-[#1F2937] border-2 border-gray-700 text-white rounded-xl text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner" />
+                        <input type="text" maxlength="1" class="otp-box w-12 h-12 bg-[#1F2937] border-2 border-gray-700 text-white rounded-xl text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner" />
+                        <input type="text" maxlength="1" class="otp-box w-12 h-12 bg-[#1F2937] border-2 border-gray-700 text-white rounded-xl text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner" />
+                        <input type="text" maxlength="1" class="otp-box w-12 h-12 bg-[#1F2937] border-2 border-gray-700 text-white rounded-xl text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner" />
+                    </div>
+                </div>
+
+                <div class="text-center text-xs text-gray-500 font-medium">
+                    Didn't receive code? <a href="javascript:void(0)" onclick="resendForgotPasswordOtp()" class="text-primary hover:underline ml-1">Resend OTP</a>
+                </div>
+
+                <div id="fp-p2-error" class="hidden text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">error</span>
+                    <span id="fp-p2-error-text">Error message</span>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="goBackToPhase1()" class="w-1/3 border border-gray-700 hover:bg-gray-800 text-gray-300 font-extrabold py-3.5 rounded-xl transition-all font-display uppercase tracking-widest text-[10px]">
+                        Back
+                    </button>
+                    <button onclick="verifyForgotPasswordOtp()" id="fp-p2-submit" class="w-2/3 bg-[#6EE7B7] hover:bg-[#34D399] text-gray-900 font-extrabold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(110,231,183,0.2)] font-display uppercase tracking-widest text-[10px]">
+                        Verify Code <span class="material-symbols-outlined text-lg">verified</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 3: Set Password -->
+        <div id="fp-phase-3" class="space-y-6 hidden">
+            <div class="mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gray-800 flex items-center justify-center border border-gray-700 shadow-inner mb-6">
+                    <span class="material-symbols-outlined text-primary text-2xl">shield</span>
+                </div>
+                <h3 class="text-2xl font-extrabold tracking-tight">New Password</h3>
+                <p class="text-gray-400 text-xs mt-1 leading-relaxed font-medium">Enter your new secure password below to complete the reset procedure.</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-extrabold tracking-[0.15em] text-gray-400 mb-2 uppercase">New Password</label>
+                    <input type="password" id="fp-password" class="w-full bg-[#1F2937] border border-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner text-sm font-medium placeholder-gray-600" placeholder="Min. 8 characters" />
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-extrabold tracking-[0.15em] text-gray-400 mb-2 uppercase">Confirm New Password</label>
+                    <input type="password" id="fp-password-conf" class="w-full bg-[#1F2937] border border-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner text-sm font-medium placeholder-gray-600" placeholder="Confirm new password" />
+                </div>
+
+                <div id="fp-p3-error" class="hidden text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">error</span>
+                    <span id="fp-p3-error-text">Error message</span>
+                </div>
+
+                <button onclick="resetPasswordSubmit()" id="fp-p3-submit" class="w-full bg-[#6EE7B7] hover:bg-[#34D399] text-gray-900 font-extrabold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(110,231,183,0.2)] font-display uppercase tracking-widest text-[10px]">
+                    Reset Password <span class="material-symbols-outlined text-lg">check_circle</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Success Phase -->
+        <div id="fp-phase-success" class="space-y-6 hidden text-center py-6">
+            <div class="w-20 h-20 rounded-full bg-green-500/10 border-2 border-green-500 flex items-center justify-center text-green-400 mx-auto mb-6 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+                <span class="material-symbols-outlined text-5xl">check</span>
+            </div>
+            <h3 class="text-3xl font-extrabold tracking-tight">Reset Complete!</h3>
+            <p class="text-gray-400 text-sm max-w-xs mx-auto leading-relaxed font-medium">Your password has been successfully updated. You can now close this window and log in with your new credentials.</p>
+            <button onclick="closeForgotPasswordModal()" class="w-full bg-[#6EE7B7] hover:bg-[#34D399] text-gray-900 font-extrabold py-3.5 rounded-xl transition-all font-display uppercase tracking-widest text-[10px]">
+                Return to Login
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Mock Mailer Glassmorphic Alert Toast -->
+<div id="mock-mailer-toast" class="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 max-w-md w-[90%] bg-green-950/80 backdrop-blur-md border border-green-500/30 rounded-2xl p-4 text-white shadow-2xl flex items-start gap-3 transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none">
+    <div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center text-green-400 flex-shrink-0">
+        <span class="material-symbols-outlined">mark_email_unread</span>
+    </div>
+    <div class="flex-grow min-w-0">
+        <h4 class="text-[10px] font-extrabold text-green-300 uppercase tracking-[0.2em]">FarmDirect Secure Mailer</h4>
+        <p class="text-[11px] text-gray-300 mt-1 font-medium" id="mock-mailer-text">OTP code simulated offline...</p>
+        <div class="mt-2.5 flex items-center gap-2">
+            <span class="text-xs font-bold text-white bg-green-900/50 border border-green-500/20 px-2.5 py-1 rounded" id="mock-mailer-code">123456</span>
+            <button onclick="copyMockMailerCode()" class="text-[10px] font-bold text-green-400 hover:text-green-300 uppercase flex items-center gap-1 transition-colors font-display tracking-widest">
+                <span class="material-symbols-outlined text-xs">content_copy</span> Copy Code
+            </button>
+        </div>
+    </div>
+    <button onclick="hideMockMailer()" class="text-gray-400 hover:text-white transition-colors">
+        <span class="material-symbols-outlined text-lg">close</span>
+    </button>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const farmerRadio = document.getElementById('login-role-farmer');
@@ -327,6 +487,312 @@
                 updateLoginCards();
                 // Scroll to top/login form smoothly
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        };
+
+        // ─── Forgot Password Modal & Logic ────────────────────────────────────────
+
+        const fpModal = document.getElementById('forgot-password-modal');
+        const fpContent = document.getElementById('forgot-password-modal-content');
+        const mailerToast = document.getElementById('mock-mailer-toast');
+        const farmerRadioFp = document.getElementById('fp-role-farmer');
+        const buyerRadioFp  = document.getElementById('fp-role-buyer');
+        const farmerLabelFp = document.getElementById('fp-label-farmer');
+        const buyerLabelFp  = document.getElementById('fp-label-buyer');
+
+        function updateFpCards() {
+            farmerLabelFp.classList.remove('border-primary', 'bg-primary/10', 'ring-1', 'ring-primary');
+            farmerLabelFp.classList.add('border-gray-700', 'bg-gray-800');
+            buyerLabelFp.classList.remove('border-amber-500', 'bg-amber-900/20', 'ring-1', 'ring-amber-500');
+            buyerLabelFp.classList.add('border-gray-700', 'bg-gray-800');
+
+            if (farmerRadioFp.checked) {
+                farmerLabelFp.classList.remove('border-gray-700', 'bg-gray-800');
+                farmerLabelFp.classList.add('border-primary', 'bg-primary/10', 'ring-1', 'ring-primary');
+            } else if (buyerRadioFp.checked) {
+                buyerLabelFp.classList.remove('border-gray-700', 'bg-gray-800');
+                buyerLabelFp.classList.add('border-amber-500', 'bg-amber-900/20', 'ring-1', 'ring-amber-500');
+            }
+        }
+
+        if (farmerRadioFp) farmerRadioFp.addEventListener('change', updateFpCards);
+        if (buyerRadioFp)  buyerRadioFp.addEventListener('change', updateFpCards);
+        updateFpCards();
+
+        window.openForgotPasswordModal = () => {
+            // Auto-select role matching the login form choice if selected
+            const activeRole = document.querySelector('input[name="role"]:checked')?.value;
+            if (activeRole === 'farmer') {
+                farmerRadioFp.checked = true;
+            } else if (activeRole === 'buyer') {
+                buyerRadioFp.checked = true;
+            }
+            updateFpCards();
+
+            // Clear inputs
+            document.getElementById('fp-email').value = '';
+            document.getElementById('fp-p1-error').classList.add('hidden');
+            resetOtpInputs();
+
+            fpModal.classList.remove('hidden');
+            setTimeout(() => {
+                fpModal.classList.remove('opacity-0');
+                fpContent.classList.remove('scale-95');
+            }, 50);
+        };
+
+        window.closeForgotPasswordModal = () => {
+            fpModal.classList.add('opacity-0');
+            fpContent.classList.add('scale-95');
+            hideMockMailer();
+            setTimeout(() => {
+                fpModal.classList.add('hidden');
+                // Reset phases
+                document.getElementById('fp-phase-1').classList.remove('hidden');
+                document.getElementById('fp-phase-2').classList.add('hidden');
+                document.getElementById('fp-phase-3').classList.add('hidden');
+                document.getElementById('fp-phase-success').classList.add('hidden');
+            }, 300);
+        };
+
+        window.goBackToPhase1 = () => {
+            document.getElementById('fp-phase-2').classList.add('hidden');
+            document.getElementById('fp-phase-1').classList.remove('hidden');
+            hideMockMailer();
+        };
+
+        // 6-digit OTP input auto-focus handling
+        const otpBoxes = document.querySelectorAll('.otp-box');
+        otpBoxes.forEach((box, index) => {
+            box.addEventListener('input', (e) => {
+                // Keep only numeric characters
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                if (e.target.value.length === 1 && index < otpBoxes.length - 1) {
+                    otpBoxes[index + 1].focus();
+                }
+            });
+            box.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                    otpBoxes[index - 1].focus();
+                }
+            });
+        });
+
+        function resetOtpInputs() {
+            otpBoxes.forEach(box => box.value = '');
+            document.getElementById('fp-p2-error').classList.add('hidden');
+        }
+
+        function getOtpString() {
+            let code = '';
+            otpBoxes.forEach(box => code += box.value);
+            return code;
+        }
+
+        // Mock mailer logic
+        window.showMockMailer = (email, code) => {
+            document.getElementById('mock-mailer-text').innerText = `Simulating outgoing email delivery. A secure password reset OTP has been dispatched to ${email}.`;
+            document.getElementById('mock-mailer-code').innerText = code;
+            mailerToast.classList.remove('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
+        };
+
+        window.hideMockMailer = () => {
+            mailerToast.classList.add('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
+        };
+
+        window.copyMockMailerCode = () => {
+            const code = document.getElementById('mock-mailer-code').innerText;
+            navigator.clipboard.writeText(code);
+            // Flash color feedback
+            const copyBtn = document.querySelector('#mock-mailer-toast button');
+            copyBtn.innerHTML = '<span class="material-symbols-outlined text-xs">check</span> Copied!';
+            setTimeout(() => {
+                copyBtn.innerHTML = '<span class="material-symbols-outlined text-xs">content_copy</span> Copy Code';
+            }, 2000);
+        };
+
+        // Submit Email (Phase 1)
+        window.submitForgotPasswordEmail = async () => {
+            const email = document.getElementById('fp-email').value;
+            const role = document.querySelector('input[name="fp_role"]:checked').value;
+            const submitBtn = document.getElementById('fp-p1-submit');
+            const errorDiv = document.getElementById('fp-p1-error');
+            const errorText = document.getElementById('fp-p1-error-text');
+
+            if (!email) {
+                errorText.innerText = 'Please enter your email address.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            errorDiv.classList.add('hidden');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="material-symbols-outlined text-lg animate-spin">sync</span> Generating OTP...';
+
+            try {
+                const response = await fetch('/forgot-password/send-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ email, role })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    // Transition to OTP phase
+                    document.getElementById('fp-phase-1').classList.add('hidden');
+                    document.getElementById('fp-phase-2').classList.remove('hidden');
+                    resetOtpInputs();
+                    setTimeout(() => otpBoxes[0].focus(), 50);
+
+                    // Show mock toast
+                    showMockMailer(email, result.otp);
+                } else {
+                    errorText.innerText = result.message;
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorText.innerText = 'An unexpected connection error occurred. Please try again.';
+                errorDiv.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Send Verification Code <span class="material-symbols-outlined text-lg">send</span>';
+            }
+        };
+
+        // Resend OTP (Phase 2)
+        window.resendForgotPasswordOtp = async () => {
+            const email = document.getElementById('fp-email').value;
+            const role = document.querySelector('input[name="fp_role"]:checked').value;
+            try {
+                const response = await fetch('/forgot-password/send-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ email, role })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    resetOtpInputs();
+                    otpBoxes[0].focus();
+                    showMockMailer(email, result.otp);
+                }
+            } catch (err) {}
+        };
+
+        // Verify OTP (Phase 2)
+        window.verifyForgotPasswordOtp = async () => {
+            const email = document.getElementById('fp-email').value;
+            const role = document.querySelector('input[name="fp_role"]:checked').value;
+            const otp = getOtpString();
+            const submitBtn = document.getElementById('fp-p2-submit');
+            const errorDiv = document.getElementById('fp-p2-error');
+            const errorText = document.getElementById('fp-p2-error-text');
+
+            if (otp.length < 6) {
+                errorText.innerText = 'Please enter the complete 6-digit OTP code.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            errorDiv.classList.add('hidden');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="material-symbols-outlined text-lg animate-spin">sync</span> Verifying...';
+
+            try {
+                const response = await fetch('/forgot-password/verify-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ email, role, otp })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    // Transition to set password phase
+                    document.getElementById('fp-phase-2').classList.add('hidden');
+                    document.getElementById('fp-phase-3').classList.remove('hidden');
+                    document.getElementById('fp-password').value = '';
+                    document.getElementById('fp-password-conf').value = '';
+                    document.getElementById('fp-p3-error').classList.add('hidden');
+                    hideMockMailer();
+                } else {
+                    errorText.innerText = result.message;
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorText.innerText = 'An unexpected connection error occurred. Please try again.';
+                errorDiv.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Verify Code <span class="material-symbols-outlined text-lg">verified</span>';
+            }
+        };
+
+        // Submit New Password (Phase 3)
+        window.resetPasswordSubmit = async () => {
+            const email = document.getElementById('fp-email').value;
+            const role = document.querySelector('input[name="fp_role"]:checked').value;
+            const otp = getOtpString();
+            const password = document.getElementById('fp-password').value;
+            const passwordConf = document.getElementById('fp-password-conf').value;
+            const submitBtn = document.getElementById('fp-p3-submit');
+            const errorDiv = document.getElementById('fp-p3-error');
+            const errorText = document.getElementById('fp-p3-error-text');
+
+            if (!password || password.length < 8) {
+                errorText.innerText = 'Password must be at least 8 characters long.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (password !== passwordConf) {
+                errorText.innerText = 'Passwords do not match.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            errorDiv.classList.add('hidden');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="material-symbols-outlined text-lg animate-spin">sync</span> Updating...';
+
+            try {
+                const response = await fetch('/forgot-password/reset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        email,
+                        role,
+                        otp,
+                        password,
+                        password_confirmation: passwordConf
+                    })
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    // Transition to success phase
+                    document.getElementById('fp-phase-3').classList.add('hidden');
+                    document.getElementById('fp-phase-success').classList.remove('hidden');
+                } else {
+                    errorText.innerText = result.message;
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorText.innerText = 'An unexpected connection error occurred. Please try again.';
+                errorDiv.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Reset Password <span class="material-symbols-outlined text-lg">check_circle</span>';
             }
         };
     });
