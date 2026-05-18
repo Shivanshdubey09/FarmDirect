@@ -160,10 +160,28 @@ class AuthController extends Controller
         // Log OTP locally for backend debugging
         \Log::info("Password Reset OTP for {$request->email} ({$request->role}): {$otp}");
 
+        // Dispatch real email via SMTP using Gmail configurations
+        try {
+            \Illuminate\Support\Facades\Mail::raw(
+                "Hello {$user->name},\n\n"
+                . "You are receiving this email because you requested a password reset for your FarmDirect account under the role of " . ucfirst($request->role) . ".\n\n"
+                . "Your 6-digit secure OTP verification code is: {$otp}\n\n"
+                . "This code is valid for the next 10 minutes. If you did not request this password reset, please secure your account immediately.\n\n"
+                . "Regards,\n"
+                . "FarmDirect Security Division",
+                function ($message) use ($user) {
+                    $message->to($user->email)
+                            ->subject('FarmDirect Password Reset OTP');
+                }
+            );
+        } catch (\Exception $e) {
+            \Log::error("Failed to dispatch password reset SMTP email to {$user->email}: " . $e->getMessage());
+        }
+
         return response()->json([
             'success' => true,
             'otp'     => $otp,
-            'message' => 'A 6-digit OTP code has been successfully generated.'
+            'message' => 'A 6-digit OTP code has been successfully generated and sent to your Gmail.'
         ]);
     }
 

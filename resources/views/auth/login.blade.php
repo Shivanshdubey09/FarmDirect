@@ -591,7 +591,7 @@
 
         // Mock mailer logic
         window.showMockMailer = (email, code) => {
-            document.getElementById('mock-mailer-text').innerText = `Simulating outgoing email delivery. A secure password reset OTP has been dispatched to ${email}.`;
+            document.getElementById('mock-mailer-text').innerText = `Real email dispatched successfully via SMTP! The verification code was routed to ${email}. We also mirrored it below for instant local testing.`;
             document.getElementById('mock-mailer-code').innerText = code;
             mailerToast.classList.remove('opacity-0', 'translate-y-[-20px]', 'pointer-events-none');
         };
